@@ -358,15 +358,19 @@ def main() -> int:
     if best_name == "DecisionTree":
         clf = DecisionTreeClassifier(random_state=42)
     elif best_name == "RandomForest":
-        clf = RandomForestClassifier(n_estimators=500, n_jobs=-1, random_state=42)
+        # 200 trees + compress=6 → 파일 크기 ~40MB로 GitHub 100MB 제한 안쪽에 유지
+        clf = RandomForestClassifier(
+            n_estimators=200, n_jobs=-1, random_state=42,
+            max_depth=30,  # 트리 깊이 제한으로 pickle 크기 추가 감소
+        )
     else:
         clf = LinearSVC(C=1.0, dual="auto", max_iter=5000, random_state=42)
     clf.fit(X_tr, y_tr)
     y_pred = clf.predict(X_te)
     test_acc = accuracy_score(y_te, y_pred)
     report = classification_report(y_te, y_pred, digits=4)
-    joblib.dump(clf, MODEL_OUT)
-    print(f"    저장: {MODEL_OUT} ({MODEL_OUT.stat().st_size/1024:.1f} KB)")
+    joblib.dump(clf, MODEL_OUT, compress=6)
+    print(f"    저장: {MODEL_OUT} ({MODEL_OUT.stat().st_size/1024/1024:.1f} MB)")
 
     print("[5/5] end-to-end 6자리 정확도 (multi 폴더) …")
     a_dig, a_seq, a_n = eval_e2e(clf, STYLE_A_MULTI, "A")

@@ -6,4 +6,3 @@ save_pages
 # Training artifacts (generated locally; too large to commit)
 synthetic_dataset/
 training/__pycache__/
-training/training_report.txt

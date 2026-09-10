@@ -1,0 +1,23 @@
+model               : RandomForest (200 trees, compressed, trimmed from 500-tree fit)
+train_size          : 35811
+test_size           : 8953
+features            : 2176 (40x40 binary + HOG-576)
+classes             : ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+single_test_acc     : ~0.81 (RandomForest 500 trees CV)
+styleA_multi_digit  : 0.3262
+styleA_multi_6match : 0.0025 (800 imgs)
+styleB_multi_digit  : 0.7275
+styleB_multi_6match : 0.2375 (800 imgs)
+
+cv_summary (3-fold on train split, HOG features, 40K+ samples):
+  DecisionTree    0.5478 ± 0.0050  (30s)
+  RandomForest    0.8127 ± 0.0010  (88s)
+  LinearSVC       0.6555 ± 0.0018  (131s)
+
+notes:
+  - styleA(warp): captcha 라이브러리 왜곡 심함 → 규칙기반 세그먼트 불가.
+    end-to-end 성능은 참고용 baseline. CRNN 등 시퀀스 모델이 필요.
+  - styleB(strike): 취소선 스타일. 세그먼트 파이프라인 기반으로 24% 완전일치.
+    단일자릿수 73%가 상한. HOG + 다양성 증량으로 얻은 결과.
+  - 500-tree 원본 모델 vs 200-tree 트림 모델: 0.75pp 차이만.
+    파일 크기 763MB → 40MB로 대폭 감소해 GitHub 제한 통과.
